@@ -46,7 +46,11 @@ jobs:
 
       - name: Run screener
         env:
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          DISCORD_WEBHOOK_BUY: ${{ secrets.DISCORD_WEBHOOK_BUY }}
+          DISCORD_WEBHOOK_SHORT: ${{ secrets.DISCORD_WEBHOOK_SHORT }}
+          DISCORD_WEBHOOK_SUMMARY: ${{ secrets.DISCORD_WEBHOOK_SUMMARY }}
+          DISCORD_WEBHOOK_OPPORTUNITIES: ${{ secrets.DISCORD_WEBHOOK_OPPORTUNITIES }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           RUN_MODE: ${{ steps.mode.outputs.mode }}
         run: python stock_screener.py
 
