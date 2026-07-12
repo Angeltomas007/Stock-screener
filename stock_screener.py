@@ -21,8 +21,15 @@ from datetime import datetime
 # Modifie cette liste avec les tickers qui t'intéressent (format Yahoo Finance)
 # Watchlist principale (suivi RSI/MACD/Bollinger classique)
 WATCHLIST = [
-    "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA",
-    "AIR.PA", "MC.PA", "OR.PA",   # exemples actions Euronext Paris
+    # Méga-caps (référence, mouvements plus lents)
+    "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA", "META",
+    # Mid-caps plus volatiles (bougent plus vite, RSI plus réactif)
+    "AMD", "NFLX", "PLTR", "SOFI", "RIVN", "COIN", "SNAP", "ROKU",
+    "U", "DKNG", "AFRM", "UPST", "RBLX", "HOOD",
+    # Small/mid-caps moins connues (surveille aussi le short)
+    "CELH", "SOUN", "ASTS", "IONQ", "RKLB", "CLSK", "MARA",
+    # Actions Euronext Paris (exemples)
+    "AIR.PA", "MC.PA", "OR.PA",
 ]
 
 # Candidats "pépites méconnues" à évaluer (ajoute des tickers ici — small/mid-cap
