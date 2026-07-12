@@ -1,0 +1,49 @@
+name: Stock Screener
+
+on:
+  schedule:
+    # Toutes les heures entre 8h et 22h UTC, jours ouvrés (ajuste à ton fuseau)
+    # -> alertes "temps réel" (en réalité vérifiées toutes les heures)
+    - cron: "0 8-22 * * 1-5"
+    # Récap quotidien à 21h UTC (~23h heure de Paris en été)
+    - cron: "0 21 * * 1-5"
+  workflow_dispatch: {}   # permet de lancer manuellement depuis GitHub
+
+jobs:
+  run-screener:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # nécessaire pour committer le fichier d'état
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Determine run mode
+        id: mode
+        run: |
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "21" ]; then
+            echo "mode=summary" >> $GITHUB_OUTPUT
+          else
+            echo "mode=check" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run screener
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RUN_MODE: ${{ steps.mode.outputs.mode }}
+        run: python stock_screener.py
+
+      - name: Commit updated state file
+        run: |
+          git config user.name "screener-bot"
+          git config user.email "screener-bot@users.noreply.github.com"
+          git add stock_state.json
+          git diff --quiet --cached || git commit -m "Update state [skip ci]"
+          git push
