@@ -104,6 +104,39 @@ def compute_atr(high: pd.Series, low: pd.Series, close: pd.Series, period: int =
     return tr.rolling(period).mean()
 
 
+def detect_bullish_divergence(close: pd.Series, rsi: pd.Series, lookback: int = 15) -> bool:
+    """Prix fait un plus bas plus bas, mais le RSI fait un plus bas plus haut (momentum baissier qui faiblit)."""
+    recent_close = close.iloc[-lookback:]
+    recent_rsi = rsi.iloc[-lookback:]
+    prior_low_idx = recent_close.iloc[:-1].idxmin()  # plus bas le plus récent AVANT aujourd'hui
+    current_price = float(close.iloc[-1])
+    prior_price = float(recent_close.loc[prior_low_idx])
+    current_rsi = float(rsi.iloc[-1])
+    prior_rsi = float(recent_rsi.loc[prior_low_idx])
+    return current_price <= prior_price and current_rsi > prior_rsi
+
+
+def detect_bearish_divergence(close: pd.Series, rsi: pd.Series, lookback: int = 15) -> bool:
+    """Prix fait un plus haut plus haut, mais le RSI fait un plus haut plus bas (momentum haussier qui faiblit)."""
+    recent_close = close.iloc[-lookback:]
+    recent_rsi = rsi.iloc[-lookback:]
+    prior_high_idx = recent_close.iloc[:-1].idxmax()
+    current_price = float(close.iloc[-1])
+    prior_price = float(recent_close.loc[prior_high_idx])
+    current_rsi = float(rsi.iloc[-1])
+    prior_rsi = float(recent_rsi.loc[prior_high_idx])
+    return current_price >= prior_price and current_rsi < prior_rsi
+
+
+def volume_confirms(volume: pd.Series, period: int = 20, multiplier: float = 1.5) -> bool:
+    """Le volume du jour dépasse significativement sa moyenne récente (confirme l'intérêt du marché)."""
+    if len(volume) < period + 1:
+        return False
+    avg_volume = float(volume.iloc[-period-1:-1].mean())
+    last_volume = float(volume.iloc[-1])
+    return avg_volume > 0 and last_volume > multiplier * avg_volume
+
+
 # --------------------------------------------------------------------------
 # ANALYSE DES NEWS (gratuit, via Yahoo Finance, scoring par mots-clés)
 # --------------------------------------------------------------------------
@@ -269,10 +302,12 @@ def analyze_ticker(ticker: str) -> dict | None:
     close = data["Close"]
     high = data["High"]
     low = data["Low"]
+    volume = data["Volume"]
     if isinstance(close, pd.DataFrame):  # sécurité multi-index yfinance
         close = close.iloc[:, 0]
         high = high.iloc[:, 0]
         low = low.iloc[:, 0]
+        volume = volume.iloc[:, 0]
 
     rsi = compute_rsi(close)
     macd_line, signal_line, hist = compute_macd(close)
@@ -307,10 +342,16 @@ def analyze_ticker(ticker: str) -> dict | None:
     rsi_overbought = last_rsi > RSI_OVERBOUGHT_THRESHOLD
 
     buy_signal = rsi_oversold and near_lower_band and uptrend
-    buy_confidence = "⭐⭐⭐" if (buy_signal and macd_turning_up) else ("⭐⭐" if buy_signal else "")
+    bullish_divergence = detect_bullish_divergence(close, rsi) if buy_signal else False
+    buy_volume_confirmed = volume_confirms(volume) if buy_signal else False
+    buy_extra_stars = "⭐" * sum([bullish_divergence, buy_volume_confirmed])
+    buy_confidence = ("⭐⭐⭐" if (buy_signal and macd_turning_up) else ("⭐⭐" if buy_signal else "")) + buy_extra_stars
 
     short_signal = rsi_overbought and near_upper_band and downtrend
-    short_confidence = "⭐⭐⭐" if (short_signal and macd_turning_down) else ("⭐⭐" if short_signal else "")
+    bearish_divergence = detect_bearish_divergence(close, rsi) if short_signal else False
+    short_volume_confirmed = volume_confirms(volume) if short_signal else False
+    short_extra_stars = "⭐" * sum([bearish_divergence, short_volume_confirmed])
+    short_confidence = ("⭐⭐⭐" if (short_signal and macd_turning_down) else ("⭐⭐" if short_signal else "")) + short_extra_stars
 
     # News : uniquement interrogées si un signal technique existe déjà (économise les appels)
     news_score, headlines = (0, [])
@@ -336,12 +377,16 @@ def analyze_ticker(ticker: str) -> dict | None:
         "buy_urgent": buy_urgent,
         "buy_stop_loss": buy_stop_loss,
         "buy_take_profit": buy_take_profit,
+        "bullish_divergence": bullish_divergence,
+        "buy_volume_confirmed": buy_volume_confirmed,
         "macd_turning_up": macd_turning_up,
         "short_signal": short_signal,
         "short_confidence": short_confidence,
         "short_urgent": short_urgent,
         "short_stop_loss": short_stop_loss,
         "short_take_profit": short_take_profit,
+        "bearish_divergence": bearish_divergence,
+        "short_volume_confirmed": short_volume_confirmed,
         "macd_turning_down": macd_turning_down,
         "uptrend": uptrend,
         "news_score": news_score,
@@ -387,8 +432,108 @@ def save_state(state: dict):
 # MAIN
 # --------------------------------------------------------------------------
 
+def send_test_notifications():
+    """Envoie un exemple factice dans chaque salon Discord pour visualiser le rendu.
+    N'utilise AUCUNE vraie donnée de marché — uniquement pour vérifier le format visuel."""
+
+    # --- Exemple ACHAT (normal) ---
+    msg_buy = (
+        "🟢 *OUVRIR POSITION ACHAT* ⭐⭐⭐⭐\n\n"
+        "*TESTCORP* — 142.30\n"
+        "RSI(14) : 27.4 (survente)\n"
+        "Tendance de fond haussière (prix > MM200) ✅\n"
+        "MACD haussier : ✅\n"
+        "Divergence haussière RSI : ✅\n"
+        "Volume confirmé : ✅\n"
+        "News neutres/mitigées (score +0)\n\n"
+        "🛑 Stop loss : 137.85\n"
+        "🎯 Take profit : 148.60\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple, pas un vrai signal."
+    )
+    send_discord(msg_buy, DISCORD_WEBHOOK_BUY or DISCORD_WEBHOOK_SUMMARY)
+
+    # --- Exemple ACHAT URGENT (avec news confirmées) ---
+    msg_buy_urgent = (
+        "🚨🚨🚨 *OUVRIR POSITION ACHAT MAINTENANT !!!* 🚨🚨🚨\n\n"
+        "*TESTCORP2* — 88.10\n"
+        "RSI(14) : 24.1 (survente)\n"
+        "Tendance de fond haussière (prix > MM200) ✅\n"
+        "MACD haussier : ✅\n"
+        "Divergence haussière RSI : ✅\n"
+        "Volume confirmé : ✅\n"
+        "News favorables ✅ (score +3)\n\n"
+        "🛑 Stop loss : 84.50\n"
+        "🎯 Take profit : 92.75\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple, pas un vrai signal."
+    )
+    send_discord(msg_buy_urgent, DISCORD_WEBHOOK_BUY or DISCORD_WEBHOOK_SUMMARY)
+
+    # --- Exemple SHORT (normal) ---
+    msg_short = (
+        "🔴 *OUVRIR POSITION SHORT* ⭐⭐\n\n"
+        "*TESTCORP3* — 305.60\n"
+        "RSI(14) : 74.2 (surachat)\n"
+        "Tendance de fond baissière (prix < MM200) ✅\n"
+        "MACD baissier : ❌\n"
+        "Divergence baissière RSI : ✅\n"
+        "Volume confirmé : ❌\n"
+        "News neutres/mitigées (score +0)\n\n"
+        "🛑 Stop loss : 312.40\n"
+        "🎯 Take profit : 296.10\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple, pas un vrai signal."
+    )
+    send_discord(msg_short, DISCORD_WEBHOOK_SHORT or DISCORD_WEBHOOK_SUMMARY)
+
+    # --- Exemple SHORT URGENT ---
+    msg_short_urgent = (
+        "🚨🚨🚨 *OUVRIR POSITION SHORT MAINTENANT !!!* 🚨🚨🚨\n\n"
+        "*TESTCORP4* — 47.90\n"
+        "RSI(14) : 78.9 (surachat)\n"
+        "Tendance de fond baissière (prix < MM200) ✅\n"
+        "MACD baissier : ✅\n"
+        "Divergence baissière RSI : ✅\n"
+        "Volume confirmé : ✅\n"
+        "News défavorables ✅ (score -2)\n\n"
+        "🛑 Stop loss : 49.85\n"
+        "🎯 Take profit : 44.20\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple, pas un vrai signal."
+    )
+    send_discord(msg_short_urgent, DISCORD_WEBHOOK_SHORT or DISCORD_WEBHOOK_SUMMARY)
+
+    # --- Exemple PÉPITE / OPPORTUNITÉ ---
+    msg_opportunity = (
+        "💎 *OPPORTUNITÉ POTENTIELLE* — TESTCORP5 (Test Corp SA)\n"
+        "Secteur : Technologie | Capi : 850000000\n\n"
+        "Test Corp SA affiche une croissance de chiffre d'affaires de 18% sur "
+        "un secteur en expansion, avec un PER prévisionnel de 14, nettement "
+        "sous la moyenne du secteur. La marge nette de 12% suggère une "
+        "rentabilité solide. Le RSI à 38 indique une zone ni survendue ni "
+        "surachetée. Les news récentes sont globalement neutres.\n\n"
+        "⚠️ Ceci n'est pas un conseil en investissement, à vérifier par "
+        "toi-même avant toute décision.\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple, pas une vraie analyse."
+    )
+    send_discord(msg_opportunity, DISCORD_WEBHOOK_OPPORTUNITIES or DISCORD_WEBHOOK_SUMMARY)
+
+    # --- Exemple RÉCAP QUOTIDIEN ---
+    msg_summary = (
+        f"📊 *[TEST] Récap quotidien* — {datetime.now().strftime('%d/%m/%Y')}\n\n"
+        "TESTCORP2: 88.10 | RSI 24.1 🟢 ACHAT\n"
+        "TESTCORP: 142.30 | RSI 27.4 🟢 ACHAT\n"
+        "TESTCORP6: 210.00 | RSI 45.0\n"
+        "TESTCORP3: 305.60 | RSI 74.2 🔴 SHORT\n"
+        "TESTCORP4: 47.90 | RSI 78.9 🔴 SHORT\n\n"
+        "⚠️ *[TEST]* — ceci est un exemple avec des données fictives."
+    )
+    send_discord(msg_summary, DISCORD_WEBHOOK_SUMMARY)
+
+    print("Notifications de test envoyées dans les 4 salons.")
 def main():
-    mode = os.environ.get("RUN_MODE", "check")  # "check" (temps réel) ou "summary" (récap soir)
+    mode = os.environ.get("RUN_MODE", "check")  # "check" (temps réel), "summary" (récap soir), "test" (exemples factices)
+
+    if mode == "test":
+        send_test_notifications()
+        return
 
     results = []
     for ticker in WATCHLIST:
@@ -426,6 +571,8 @@ def main():
                 f"RSI(14) : {r['rsi']} (survente)\n"
                 f"Tendance de fond haussière (prix > MM200) ✅\n"
                 f"MACD haussier : {'✅' if r['macd_turning_up'] else '❌'}\n"
+                f"Divergence haussière RSI : {'✅' if r['bullish_divergence'] else '❌'}\n"
+                f"Volume confirmé : {'✅' if r['buy_volume_confirmed'] else '❌'}\n"
                 f"{news_line}\n"
                 f"🛑 Stop loss : {r['buy_stop_loss']}\n"
                 f"🎯 Take profit : {r['buy_take_profit']}\n"
@@ -445,6 +592,8 @@ def main():
                 f"RSI(14) : {r['rsi']} (surachat)\n"
                 f"Tendance de fond baissière (prix < MM200) ✅\n"
                 f"MACD baissier : {'✅' if r['macd_turning_down'] else '❌'}\n"
+                f"Divergence baissière RSI : {'✅' if r['bearish_divergence'] else '❌'}\n"
+                f"Volume confirmé : {'✅' if r['short_volume_confirmed'] else '❌'}\n"
                 f"{news_line}\n"
                 f"🛑 Stop loss : {r['short_stop_loss']}\n"
                 f"🎯 Take profit : {r['short_take_profit']}\n"
