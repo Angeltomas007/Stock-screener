@@ -8,11 +8,10 @@ Nécessite un hébergement qui tourne 24h/24 (pas GitHub Actions) — voir READM
 """
 
 import os
-import sys
 import discord
 
-# Réutilise toute la logique d'analyse déjà écrite dans stock_screener.py
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+# stock_screener.py est dupliqué dans ce même dossier bot/ (Railway ne build
+# que ce dossier, il n'a pas accès au reste du repo)
 from stock_screener import WATCHLIST, analyze_ticker  # noqa: E402
 
 DISCORD_BOT_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
@@ -120,3 +119,4 @@ if __name__ == "__main__":
     if not DISCORD_BOT_TOKEN:
         raise SystemExit("DISCORD_BOT_TOKEN manquant dans les variables d'environnement.")
     client.run(DISCORD_BOT_TOKEN)
+
