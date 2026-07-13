@@ -1,10 +1,126 @@
 {
-  "AAPL": false,
-  "MSFT": false,
-  "GOOGL": false,
-  "AMZN": false,
-  "TSLA": false,
-  "AIR.PA": false,
-  "MC.PA": false,
-  "OR.PA": false
+  "AAPL": {
+    "buy": false,
+    "short": false
+  },
+  "MSFT": {
+    "buy": false,
+    "short": false
+  },
+  "GOOGL": {
+    "buy": false,
+    "short": false
+  },
+  "AMZN": {
+    "buy": false,
+    "short": false
+  },
+  "TSLA": {
+    "buy": false,
+    "short": false
+  },
+  "AIR.PA": {
+    "buy": false,
+    "short": false
+  },
+  "MC.PA": {
+    "buy": false,
+    "short": false
+  },
+  "OR.PA": {
+    "buy": false,
+    "short": false
+  },
+  "NVDA": {
+    "buy": false,
+    "short": false
+  },
+  "META": {
+    "buy": false,
+    "short": false
+  },
+  "AMD": {
+    "buy": false,
+    "short": false
+  },
+  "NFLX": {
+    "buy": false,
+    "short": false
+  },
+  "PLTR": {
+    "buy": false,
+    "short": false
+  },
+  "SOFI": {
+    "buy": false,
+    "short": false
+  },
+  "RIVN": {
+    "buy": false,
+    "short": false
+  },
+  "COIN": {
+    "buy": false,
+    "short": false
+  },
+  "SNAP": {
+    "buy": false,
+    "short": false
+  },
+  "ROKU": {
+    "buy": false,
+    "short": false
+  },
+  "U": {
+    "buy": false,
+    "short": false
+  },
+  "DKNG": {
+    "buy": false,
+    "short": false
+  },
+  "AFRM": {
+    "buy": false,
+    "short": false
+  },
+  "UPST": {
+    "buy": false,
+    "short": false
+  },
+  "RBLX": {
+    "buy": false,
+    "short": false
+  },
+  "HOOD": {
+    "buy": false,
+    "short": false
+  },
+  "CELH": {
+    "buy": false,
+    "short": false
+  },
+  "SOUN": {
+    "buy": false,
+    "short": false
+  },
+  "ASTS": {
+    "buy": false,
+    "short": false
+  },
+  "IONQ": {
+    "buy": false,
+    "short": false
+  },
+  "RKLB": {
+    "buy": false,
+    "short": false
+  },
+  "CLSK": {
+    "buy": false,
+    "short": false
+  },
+  "MARA": {
+    "buy": false,
+    "short": false
+  }
 }
