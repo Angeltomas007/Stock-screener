@@ -73,7 +73,7 @@
   },
   "U": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "DKNG": {
     "buy": false,
