@@ -5,7 +5,7 @@
   },
   "MSFT": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "GOOGL": {
     "buy": false,
