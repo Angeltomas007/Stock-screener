@@ -61,7 +61,7 @@
   },
   "COIN": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "SNAP": {
     "buy": false,
@@ -80,7 +80,7 @@
     "short": false
   },
   "AFRM": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "UPST": {
