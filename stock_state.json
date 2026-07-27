@@ -80,7 +80,7 @@
     "short": false
   },
   "AFRM": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "UPST": {
