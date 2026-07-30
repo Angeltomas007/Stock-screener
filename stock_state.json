@@ -40,7 +40,7 @@
     "short": false
   },
   "AMD": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "NFLX": {
