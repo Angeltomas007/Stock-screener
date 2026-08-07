@@ -101,7 +101,7 @@
   },
   "SOUN": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "ASTS": {
     "buy": false,
