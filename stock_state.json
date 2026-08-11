@@ -45,7 +45,7 @@
   },
   "NFLX": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "PLTR": {
     "buy": false,
