@@ -61,7 +61,7 @@
   },
   "COIN": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "SNAP": {
     "buy": false,
