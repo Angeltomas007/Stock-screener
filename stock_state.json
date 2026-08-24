@@ -17,7 +17,7 @@
   },
   "TSLA": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "AIR.PA": {
     "buy": true,
