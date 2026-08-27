@@ -12,7 +12,7 @@
     "short": false
   },
   "AMZN": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "TSLA": {
@@ -45,7 +45,7 @@
   },
   "NFLX": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "PLTR": {
     "buy": false,
@@ -61,7 +61,7 @@
   },
   "COIN": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "SNAP": {
     "buy": false,
