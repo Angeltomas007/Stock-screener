@@ -12,7 +12,7 @@
     "short": false
   },
   "AMZN": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "TSLA": {
@@ -20,7 +20,7 @@
     "short": false
   },
   "AIR.PA": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "MC.PA": {
@@ -61,7 +61,7 @@
   },
   "COIN": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "SNAP": {
     "buy": false,
