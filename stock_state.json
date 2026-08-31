@@ -20,7 +20,7 @@
     "short": false
   },
   "AIR.PA": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "MC.PA": {
