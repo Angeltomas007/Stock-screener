@@ -72,7 +72,7 @@
     "short": false
   },
   "U": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "DKNG": {
@@ -89,7 +89,7 @@
   },
   "RBLX": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "HOOD": {
     "buy": false,
