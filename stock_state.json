@@ -20,7 +20,7 @@
     "short": false
   },
   "AIR.PA": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "MC.PA": {
@@ -72,7 +72,7 @@
     "short": false
   },
   "U": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "DKNG": {
