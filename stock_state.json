@@ -37,7 +37,7 @@
   },
   "META": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "AMD": {
     "buy": false,
