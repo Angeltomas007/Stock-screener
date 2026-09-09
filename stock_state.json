@@ -20,7 +20,7 @@
     "short": false
   },
   "AIR.PA": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "MC.PA": {
@@ -37,7 +37,7 @@
   },
   "META": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "AMD": {
     "buy": false,
@@ -89,7 +89,7 @@
   },
   "RBLX": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "HOOD": {
     "buy": false,
