@@ -37,7 +37,7 @@
   },
   "META": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "AMD": {
     "buy": false,
@@ -89,7 +89,7 @@
   },
   "RBLX": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "HOOD": {
     "buy": false,
