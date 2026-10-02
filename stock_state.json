@@ -113,7 +113,7 @@
   },
   "RKLB": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "CLSK": {
     "buy": false,
