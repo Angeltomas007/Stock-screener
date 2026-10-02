@@ -68,7 +68,7 @@
     "short": false
   },
   "ROKU": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "U": {
