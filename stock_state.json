@@ -92,7 +92,7 @@
     "short": false
   },
   "HOOD": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "CELH": {
