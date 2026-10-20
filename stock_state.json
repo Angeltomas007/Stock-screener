@@ -89,7 +89,7 @@
   },
   "RBLX": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "HOOD": {
     "buy": false,
