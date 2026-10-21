@@ -36,7 +36,7 @@ main:focus { outline: none; }
 
 /* ---------- En-tête ---------- */
 .topbar {
-  position: sticky; top: 0; z-index: 1000;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 1000;
   background: var(--navy); color: #fff;
   border-bottom: 3px solid var(--gold);
 }
@@ -314,3 +314,9 @@ main:focus { outline: none; }
 .rundown-day:first-child { margin-top: 0; }
 .rundown li { font-size: 14.5px; }
 .rundown b { font-variant-numeric: tabular-nums; }
+.tile-notice {
+  position: absolute; left: 54px; right: 10px; top: 10px; z-index: 600;
+  background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px;
+  font-size: 13.5px; color: var(--ink); box-shadow: 0 2px 8px rgba(11,44,113,.12);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 1001; background: var(--navy); }

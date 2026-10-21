@@ -184,7 +184,7 @@
   });
 
   /* ---------- Lieux & carte ---------- */
-  var map = null, markers = {};
+  var map = null, markers = {}, tileNotice = false;
 
   function initMap() {
     if (map || !window.L) return;
@@ -193,6 +193,14 @@
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).on("tileerror", function () {
+      if (tileNotice) return;
+      tileNotice = true;
+      var n = document.createElement("div");
+      n.className = "tile-notice";
+      n.innerHTML = "Fond de carte indisponible. Les repères, adresses et itinéraires restent utilisables" +
+        (E.mapUrl ? ' · <a href="' + esc(E.mapUrl) + '" target="_blank" rel="noopener">Ouvrir dans Google Maps</a>' : "") + ".";
+      document.querySelector(".map-card").appendChild(n);
     }).addTo(map);
     located.forEach(function (v) {
       var icon = L.divIcon({ className: "", html: '<div class="marker"><span>' + v.num + "</span></div>", iconSize: [34, 34], iconAnchor: [17, 34] });
