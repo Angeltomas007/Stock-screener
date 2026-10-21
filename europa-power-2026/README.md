@@ -7,7 +7,9 @@ Tout le contenu est dans **`data.js`** (lieux, programme, infos pratiques, consi
 Pour tester l'affichage d'un autre moment : `index.html?now=2026-10-22T10:00`.
 
 ## Mettre en ligne
-Déposer le dossier tel quel sur n'importe quel hébergement statique (Netlify Drop, GitHub Pages, OVH…). Pour retirer le site, il suffit de supprimer le dossier.
+Déposer le dossier `europa-power-2026/` tel quel sur n'importe quel hébergement statique (ex. glisser-déposer sur https://app.netlify.com/drop, ou GitHub Pages). Pour retirer le site, il suffit de supprimer le dossier.
+
+`europa-power-2026-apercu.html` (racine du dépôt) est une copie autonome en un seul fichier, pour prévisualiser sans serveur ; les liens vers les PDF n'y fonctionnent pas.
 
 ## Rubriques (liens directs partageables, ex. QR codes)
 - `#programme` · `#programme/2026-10-22` (une journée) · `#programme/2026-10-22/<idLieu>` (journée + lieu)

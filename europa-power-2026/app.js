@@ -38,7 +38,7 @@
     return s.getDate() + "–" + e.getDate() + " " + fmt(e, { month: "long", year: "numeric" });
   }
   function directionsUrl(v) {
-    var dest = (v.lat != null && v.lng != null) ? v.lat + "," + v.lng : v.address;
+    var dest = v.directions || v.address || (v.lat + "," + v.lng);
     return "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(dest);
   }
   function sessionsFor(filter) {
@@ -53,10 +53,19 @@
 
   /* ---------- Accueil ---------- */
   function renderHome() {
-    $("#hero-kicker").textContent = E.edition + (E.organiser ? " · " + E.organiser : "");
+    $("#hero-kicker").textContent = dateRangeLabel() + " · " + E.city;
     $("#hero-title").textContent = E.name + " " + E.year;
-    $("#hero-meta").textContent = dateRangeLabel() + " · " + E.city;
+    $("#hero-meta").textContent = E.tagline || "";
+    $("#hero-meta").className = "hero__tagline";
     $("#hero-intro").textContent = E.intro;
+
+    $("#days-overview").innerHTML = days.map(function (iso) {
+      var info = (D.dayInfo || {})[iso] || {};
+      return '<a class="day-card' + (iso === today ? " is-today" : "") + '" href="#programme/' + iso + '">' +
+        "<small>" + esc(fmt(parseDay(iso), { weekday: "long", day: "numeric", month: "long" })) + (iso === today ? " · aujourd’hui" : "") + "</small>" +
+        "<strong>" + esc(info.title || "") + "</strong>" +
+        (info.where ? "<span>" + esc(info.where) + "</span>" : "") + "</a>";
+    }).join("");
 
     var icons = {
       cal: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
@@ -73,8 +82,9 @@
       '<a href="#lieux"><span class="quick__icon">' + icons.pin + "</span><span><strong>Lieux &amp; carte</strong><small>Adresses et itinéraires</small></span></a>" +
       '<a href="#infos"><span class="quick__icon">' + icons.info + "</span><span><strong>Infos pratiques</strong><small>Accès, consignes, contacts</small></span></a>";
 
-    $("#themes").innerHTML = E.themes.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
-    $("#themes-block").hidden = !E.themes.length;
+    var themes = D.themes || [];
+    $("#themes").innerHTML = themes.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("");
+    $("#themes-block").hidden = !themes.length;
   }
 
   /* ---------- Programme ---------- */
@@ -96,7 +106,7 @@
     if (venueOpts.length > 1) {
       html += '<label>Lieu<select id="f-venue"><option value="">Tous les lieux</option>' +
         venueOpts.map(function (v) {
-          return '<option value="' + esc(v.id) + '"' + (state.venue === v.id ? " selected" : "") + ">" + v.num + ". " + esc(v.name) + "</option>";
+          return '<option value="' + esc(v.id) + '"' + (state.venue === v.id ? " selected" : "") + ">" + v.num + ". " + esc(v.short || v.name) + "</option>";
         }).join("") + "</select></label>";
     }
     if (typeOpts.length > 1) {
@@ -119,6 +129,9 @@
 
   function renderTimeline() {
     $("#prog-sub").textContent = fmt(parseDay(state.day), { weekday: "long", day: "numeric", month: "long", year: "numeric" }) + " · " + E.city;
+    var info = (D.dayInfo || {})[state.day];
+    var head = info ? '<li class="day-head"><strong>' + esc(info.title) + "</strong>" +
+      (info.subtitle ? "<span>" + esc(info.subtitle) + "</span>" : "") + "</li>" : "";
 
     if (!D.sessions.length) {
       $("#timeline").innerHTML = "<li>" + emptyBlock("Programme détaillé à venir", "Les horaires, sessions et lieux seront publiés ici dès leur confirmation.") + "</li>";
@@ -128,21 +141,32 @@
       return s.day === state.day && (!state.venue || s.venue === state.venue) && (!state.type || s.type === state.type);
     });
     if (!list.length) {
-      $("#timeline").innerHTML = "<li>" + emptyBlock("Aucun événement", "Aucun événement ne correspond à ces critères pour cette journée.") + "</li>";
+      $("#timeline").innerHTML = head + "<li>" + emptyBlock("Aucun événement", "Aucun événement ne correspond à ces critères pour cette journée.") + "</li>";
       return;
     }
-    $("#timeline").innerHTML = list.map(function (s) {
+    $("#timeline").innerHTML = head + list.map(function (s) {
       var v = venueIndex[s.venue];
       var st = sessionStatus(s);
+      var more = "";
+      if ((s.people && s.people.length) || (s.details && s.details.length) || s.partners) {
+        more = "<details><summary>" + (s.details && s.details.length ? "Déroulé et intervenants" : "Intervenants") + "</summary>" +
+          (s.details && s.details.length ? "<ul>" + s.details.map(function (d) { return "<li>" + esc(d) + "</li>"; }).join("") + "</ul>" : "") +
+          "<dl>" + (s.people || []).map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") +
+          (s.partners ? "<dt>Partenaires</dt><dd>" + esc(s.partners) + "</dd>" : "") + "</dl></details>";
+      }
       return '<li class="session' + (st ? " is-" + st : "") + '">' +
         '<div class="session__time">' + esc(hm(s.start)) + (s.end ? "<small>" + esc(hm(s.end)) + "</small>" : "") + "</div>" +
         "<div>" +
-          (D.types[s.type] ? '<span class="badge">' + esc(D.types[s.type]) + "</span>" : "") +
+          (D.types[s.type] ? '<span class="badge badge--type-' + esc(s.type) + '">' + esc(D.types[s.type]) + "</span>" : "") +
+          (s.access && D.accessLabels[s.access] ? '<span class="badge badge--access">' + esc(D.accessLabels[s.access]) + "</span>" : "") +
           (st === "now" ? '<span class="badge badge--now">En cours</span>' : "") +
           "<h3>" + esc(s.title) + "</h3>" +
+          (s.subtitle ? '<p class="session__sub">' + esc(s.subtitle) + "</p>" : "") +
           (s.description ? "<p>" + esc(s.description) + "</p>" : "") +
-          (v ? '<a class="venue-link" href="#lieux/' + esc(v.id) + '">' + pin(v) + esc(v.name) + "</a>"
-             : (s.venue ? '<span class="muted">' + esc(s.venue) + "</span>" : "")) +
+          '<div class="session__where">' +
+            (v ? '<a class="venue-link" href="#lieux/' + esc(v.id) + '">' + pin(v) + esc(v.short || v.name) + "</a>" : "") +
+            (s.room ? '<span class="session__room">' + esc(s.room) + "</span>" : "") +
+          "</div>" + more +
         "</div></li>";
     }).join("");
   }
@@ -176,6 +200,10 @@
         .addTo(map)
         .on("click", function () { location.hash = "lieux/" + v.id; });
     });
+    (D.points || []).forEach(function (pt) {
+      var icon = L.divIcon({ className: "", html: '<div class="marker marker--point"><span>' + esc(pt.label) + "</span></div>", iconSize: null, iconAnchor: [20, 12] });
+      L.marker([pt.lat, pt.lng], { icon: icon, title: pt.name, keyboard: false }).addTo(map).bindPopup(esc(pt.name));
+    });
     if (located.length > 1) {
       map.fitBounds(L.latLngBounds(located.map(function (v) { return [v.lat, v.lng]; })), { padding: [40, 40] });
     } else if (located.length === 1) {
@@ -184,16 +212,23 @@
     $("#map-empty").hidden = located.length > 0;
   }
 
+  function renderMapLinks() {
+    var links = [];
+    if (E.mapUrl) links.push('<a href="' + esc(E.mapUrl) + '" target="_blank" rel="noopener">Ouvrir la carte Google Maps officielle</a>');
+    if (E.transportUrl) links.push('<a href="' + esc(E.transportUrl) + '" target="_blank" rel="noopener">Horaires tram et bus (CTS)</a>');
+    $("#map-links").innerHTML = links.join("");
+  }
+
   function renderVenueList() {
     if (!D.venues.length) {
       $("#venue-list").innerHTML = "<li>" + emptyBlock("Lieux à confirmer", "La liste des lieux et leurs adresses seront publiées ici.") + "</li>";
       return;
     }
     $("#venue-list").innerHTML = D.venues.map(function (v) {
-      var n = D.sessions.filter(function (s) { return s.venue === v.id; }).length;
       return '<li><button class="venue-item' + (state.selectedVenue === v.id ? " is-active" : "") + '" data-venue="' + esc(v.id) + '">' +
         pin(v) + "<span><strong>" + esc(v.name) + "</strong><small>" + esc(v.address || "Adresse à confirmer") + "</small>" +
-        (n ? "<small>" + n + " événement" + (n > 1 ? "s" : "") + "</small>" : "") + "</span></button></li>";
+        (v.info ? "<small>" + esc(v.info) + "</small>" : "") +
+        "</span></button></li>";
     }).join("");
   }
 
@@ -211,7 +246,7 @@
     var evHtml = Object.keys(byDay).map(function (day) {
       return "<dt>" + esc(fmt(parseDay(day), { weekday: "long", day: "numeric", month: "long" })) + "</dt><dd><ul>" +
         byDay[day].map(function (s) {
-          return "<li><b>" + esc(hm(s.start)) + "</b>" + esc(s.title) + "</li>";
+          return "<li><b>" + esc(hm(s.start)) + "</b>" + esc(s.title) + (s.room ? ' <span class="muted">· ' + esc(s.room) + "</span>" : "") + "</li>";
         }).join("") + "</ul></dd>";
     }).join("");
 
@@ -220,7 +255,7 @@
         "<h2>" + pin(v) + esc(v.name) + "</h2>" +
         "<address>" + esc(v.address || "Adresse à confirmer") + "</address>" +
         "<dl>" +
-          (v.access ? "<dt>Accès</dt><dd>" + esc(v.access) + "</dd>" : "") +
+          (v.access ? "<dt>Accès depuis la gare</dt><dd>" + esc(v.access) + "</dd>" : "") +
           (v.info ? "<dt>Informations utiles</dt><dd>" + esc(v.info) + "</dd>" : "") +
           (evHtml || "<dt>Événements</dt><dd class=\"muted\">Programme de ce lieu à venir.</dd>") +
         "</dl>" +
@@ -276,15 +311,26 @@
             esc(v.address) + '<br><a href="' + directionsUrl(v) + '" target="_blank" rel="noopener">Itinéraire</a></div></li>';
         }).join("") + "</ul></div>";
     }
-    if (P.transport.length) html += listCard("Accès et transports", P.transport);
-    if (P.instructions.length) html += listCard("Consignes aux participants", P.instructions);
-    if (P.contacts.length) html += contactCard("Contacts", P.contacts);
+    if (P.transport && P.transport.length) html += listCard("Accès et transports", P.transport);
+    if (P.instructions && P.instructions.length) html += listCard("Consignes aux participants", P.instructions);
+    if (P.hotels && P.hotels.length) {
+      html += '<div class="card"><h2>Hôtels — trajet depuis la gare</h2>' + P.hotels.map(function (h) {
+        return '<div class="hotel"><strong>' + esc(h.name) + "</strong><small>" + esc(h.address) + "</small><small>" + esc(h.route) +
+          ' · <a href="' + directionsUrl(h) + '" target="_blank" rel="noopener">Itinéraire</a></small></div>';
+      }).join("") + "</div>";
+    }
+    if (P.contacts && P.contacts.length) html += contactCard("Contacts utiles", P.contacts);
+    if (P.documents && P.documents.length) {
+      html += '<div class="card"><h2>Documents</h2><ul>' + P.documents.map(function (d) {
+        return '<li><a href="' + esc(d.href) + '" target="_blank" rel="noopener">' + esc(d.label) + "</a></li>";
+      }).join("") + "</ul></div>";
+    }
     if (E.website) {
       html += '<div class="card"><h2>Organisation</h2><p style="margin:0">' + esc(E.name) + " " + esc(E.year) +
         " est organisée par " + esc(E.organiser) + '.<br><a href="' + esc(E.website) + '" target="_blank" rel="noopener">' +
         esc(E.website.replace(/^https?:\/\//, "").replace(/\/$/, "")) + "</a></p></div>";
     }
-    if (!addressed.length && !P.transport.length && !P.instructions.length && !P.contacts.length) {
+    if (!addressed.length && !(P.transport || []).length && !(P.contacts || []).length) {
       html = emptyBlock("Informations pratiques à venir", "Adresses, accès et consignes seront publiés ici dès leur confirmation.") + html;
     }
     $("#infos").innerHTML = html;
@@ -293,9 +339,23 @@
   /* ---------- Équipes ---------- */
   function renderTeam() {
     var T = D.team, html = "";
+    if (D.sessions.length) {
+      html += '<div class="card"><h2>Déroulé par lieu</h2>' + days.map(function (day) {
+        var list = sessionsFor(function (s) { return s.day === day && s.type !== "pause"; });
+        if (!list.length) return "";
+        return '<p class="rundown-day">' + esc(fmt(parseDay(day), { weekday: "long", day: "numeric", month: "long" })) + '</p><ul class="rundown">' +
+          list.map(function (s) {
+            var v = venueIndex[s.venue];
+            return "<li><b>" + esc(s.start + "–" + s.end) + "</b> " + esc(s.title) +
+              (v ? ' · <a href="#lieux/' + esc(v.id) + '">' + esc(v.short || v.name) + "</a>" : "") +
+              (s.access ? ' <span class="muted">(' + esc(D.accessLabels[s.access]) + ")</span>" : "") + "</li>";
+          }).join("") + "</ul>";
+      }).join("") + "</div>";
+    }
     T.sections.forEach(function (s) { html += listCard(s.title, s.items); });
     if (T.contacts.length) html += contactCard("Contacts coordination", T.contacts);
-    $("#team").innerHTML = html || emptyBlock("Consignes à venir", "Les consignes destinées aux équipes seront publiées ici.");
+    html += emptyBlock("Consignes hôtes / hôtesses à venir", "Aucun brief spécifique aux équipes d’accueil n’a encore été transmis (postes, horaires de présence, tenue, contacts coordination).");
+    $("#team").innerHTML = html;
   }
 
   /* ---------- Pied de page ---------- */
@@ -337,6 +397,7 @@
   renderInfos();
   renderTeam();
   renderVenueList();
+  renderMapLinks();
   window.addEventListener("hashchange", route);
   route();
 })();

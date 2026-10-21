@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Europa Power Conference 2026 — Strasbourg</title>
   <meta name="description" content="Programme, lieux et informations pratiques de l’Europa Power Conference 2026, Strasbourg, 21–23 octobre.">
-  <meta name="theme-color" content="#0b2550">
+  <meta name="theme-color" content="#0b2c71">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -14,9 +14,9 @@
 
   <header class="topbar">
     <div class="wrap topbar__inner">
-      <a class="brand" href="#accueil" aria-label="Accueil">
-        <span class="brand__mark" aria-hidden="true">EP</span>
-        <span class="brand__text"><strong>Europa Power</strong><span>Strasbourg 2026</span></span>
+      <a class="brand" href="#accueil" aria-label="Europa Power Conference 2026 — accueil">
+        <img class="brand__logo" src="assets/logo-white.png" alt="Europa Power Initiative" width="130" height="48">
+        <span class="brand__text"><strong>Conference 2026</strong><span>Strasbourg · 21–23 oct.</span></span>
       </a>
       <nav class="nav" aria-label="Rubriques">
         <a href="#accueil" data-route="accueil">Accueil</a>
@@ -41,8 +41,10 @@
       </div>
       <div class="wrap">
         <div class="quick" id="quick"></div>
+        <h2 class="h-section">Les trois journées</h2>
+        <div class="days-overview" id="days-overview"></div>
         <div class="block" id="themes-block">
-          <h2 class="h-section">Thématiques</h2>
+          <h2 class="h-section">Thèmes des sessions de travail</h2>
           <ul class="chips" id="themes"></ul>
         </div>
       </div>
@@ -66,7 +68,7 @@
       <div class="wrap">
         <header class="view__head">
           <h1>Lieux &amp; carte</h1>
-          <p class="muted">Touchez un repère ou un lieu pour afficher l’adresse, les événements et l’itinéraire.</p>
+          <p class="muted">Touchez un repère ou un lieu pour afficher l’adresse, l’accès depuis la gare, les événements et l’itinéraire.</p>
         </header>
       </div>
       <div class="wrap map-layout">
@@ -81,6 +83,7 @@
       <div class="wrap">
         <h2 class="h-section">Tous les lieux</h2>
         <ol class="venue-list" id="venue-list"></ol>
+        <p class="map-links" id="map-links"></p>
       </div>
     </section>
 
