@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Europa Power Conference 2026 — Strasbourg</title>
+  <meta name="description" content="Programme, lieux et informations pratiques de l’Europa Power Conference 2026, Strasbourg, 21–23 octobre.">
+  <meta name="theme-color" content="#0b2550">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Aller au contenu</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="#accueil" aria-label="Accueil">
+        <span class="brand__mark" aria-hidden="true">EP</span>
+        <span class="brand__text"><strong>Europa Power</strong><span>Strasbourg 2026</span></span>
+      </a>
+      <nav class="nav" aria-label="Rubriques">
+        <a href="#accueil" data-route="accueil">Accueil</a>
+        <a href="#programme" data-route="programme">Programme</a>
+        <a href="#lieux" data-route="lieux">Lieux &amp; carte</a>
+        <a href="#infos" data-route="infos">Infos pratiques</a>
+        <a href="#equipes" data-route="equipes" class="nav__team">Équipes</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <!-- ACCUEIL -->
+    <section class="view" id="view-accueil" data-view="accueil">
+      <div class="hero">
+        <div class="wrap">
+          <p class="hero__kicker" id="hero-kicker"></p>
+          <h1 class="hero__title" id="hero-title"></h1>
+          <p class="hero__meta" id="hero-meta"></p>
+          <p class="hero__intro" id="hero-intro"></p>
+        </div>
+      </div>
+      <div class="wrap">
+        <div class="quick" id="quick"></div>
+        <div class="block" id="themes-block">
+          <h2 class="h-section">Thématiques</h2>
+          <ul class="chips" id="themes"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAMME -->
+    <section class="view" id="view-programme" data-view="programme" hidden>
+      <div class="wrap">
+        <header class="view__head">
+          <h1>Programme</h1>
+          <p class="muted" id="prog-sub"></p>
+        </header>
+        <div class="days" role="tablist" aria-label="Journées" id="days"></div>
+        <div class="filters" id="filters"></div>
+        <ol class="timeline" id="timeline"></ol>
+      </div>
+    </section>
+
+    <!-- LIEUX -->
+    <section class="view" id="view-lieux" data-view="lieux" hidden>
+      <div class="wrap">
+        <header class="view__head">
+          <h1>Lieux &amp; carte</h1>
+          <p class="muted">Touchez un repère ou un lieu pour afficher l’adresse, les événements et l’itinéraire.</p>
+        </header>
+      </div>
+      <div class="wrap map-layout">
+        <div class="map-card">
+          <div id="map" aria-label="Carte des lieux"></div>
+          <div class="map-empty" id="map-empty" hidden>
+            <p><strong>Lieux à confirmer</strong><br>Les repères apparaîtront dès la publication des adresses officielles.</p>
+          </div>
+        </div>
+        <aside class="venue-panel" id="venue-panel" aria-live="polite"></aside>
+      </div>
+      <div class="wrap">
+        <h2 class="h-section">Tous les lieux</h2>
+        <ol class="venue-list" id="venue-list"></ol>
+      </div>
+    </section>
+
+    <!-- INFOS PRATIQUES -->
+    <section class="view" id="view-infos" data-view="infos" hidden>
+      <div class="wrap">
+        <header class="view__head">
+          <h1>Informations pratiques</h1>
+        </header>
+        <div class="grid-2" id="infos"></div>
+      </div>
+    </section>
+
+    <!-- ÉQUIPES -->
+    <section class="view view--team" id="view-equipes" data-view="equipes" hidden>
+      <div class="wrap">
+        <div class="team-banner">
+          <span class="team-banner__tag">Usage interne</span>
+          <p>Consignes réservées aux hôtes, hôtesses et équipes d’organisation. Ces informations ne concernent pas les participants.</p>
+        </div>
+        <header class="view__head">
+          <h1>Informations équipes</h1>
+        </header>
+        <div class="grid-2" id="team"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner" id="footer"></div>
+  </footer>
+
+  <!-- Barre de navigation mobile -->
+  <nav class="tabbar" aria-label="Navigation principale">
+    <a href="#accueil" data-route="accueil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Accueil</span></a>
+    <a href="#programme" data-route="programme"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span>Programme</span></a>
+    <a href="#lieux" data-route="lieux"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><span>Lieux</span></a>
+    <a href="#infos" data-route="infos"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>Infos</span></a>
+    <a href="#equipes" data-route="equipes"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2A5 5 0 0 1 21 19"/></svg><span>Équipes</span></a>
+  </nav>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
