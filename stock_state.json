@@ -32,11 +32,11 @@
     "short": false
   },
   "NVDA": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "META": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "AMD": {
