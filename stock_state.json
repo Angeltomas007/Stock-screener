@@ -36,11 +36,11 @@
     "short": false
   },
   "META": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "AMD": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "NFLX": {
