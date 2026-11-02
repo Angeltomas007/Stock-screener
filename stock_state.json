@@ -64,7 +64,7 @@
     "short": false
   },
   "SNAP": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "ROKU": {
