@@ -77,7 +77,7 @@
   },
   "DKNG": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "AFRM": {
     "buy": false,
@@ -97,7 +97,7 @@
   },
   "CELH": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "SOUN": {
     "buy": false,
