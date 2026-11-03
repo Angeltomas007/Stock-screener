@@ -4,7 +4,7 @@
     "short": false
   },
   "MSFT": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "GOOGL": {
@@ -40,7 +40,7 @@
     "short": false
   },
   "AMD": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "NFLX": {
@@ -64,7 +64,7 @@
     "short": false
   },
   "SNAP": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "ROKU": {
