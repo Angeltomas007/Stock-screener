@@ -48,7 +48,7 @@
     "short": false
   },
   "PLTR": {
-    "buy": false,
+    "buy": true,
     "short": false
   },
   "SOFI": {
