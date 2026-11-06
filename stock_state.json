@@ -48,7 +48,7 @@
     "short": false
   },
   "PLTR": {
-    "buy": true,
+    "buy": false,
     "short": false
   },
   "SOFI": {
@@ -77,7 +77,7 @@
   },
   "DKNG": {
     "buy": false,
-    "short": true
+    "short": false
   },
   "AFRM": {
     "buy": false,
