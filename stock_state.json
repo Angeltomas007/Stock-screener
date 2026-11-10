@@ -97,7 +97,7 @@
   },
   "CELH": {
     "buy": false,
-    "short": false
+    "short": true
   },
   "SOUN": {
     "buy": false,
